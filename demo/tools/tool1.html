@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Practice Song Picker | O-Kaye Productions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Montserrat:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --white:#FFFFFF;--navy:#101D38;--black:#111010;--red:#E20F0E;--gray:#F5F5F5;--lime:#B3FF00;
+  --muted:#5c5757;--line:#dcd8d8;--line-strong:#b9b3b3;
+  --sans:"DM Sans",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  --mono:"Montserrat","DM Sans",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--white);color:var(--black);font-family:var(--sans);font-size:19px;line-height:1.55;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+button{font:inherit;color:inherit}
+a{color:var(--black)}
+:focus-visible{outline:3px solid var(--navy);outline-offset:3px}
+
+.wrap{max-width:780px;margin:0 auto;padding:0 24px}
+.wide{max-width:1040px}
+
+/* Header */
+.top{display:flex;align-items:center;justify-content:space-between;padding:26px 0 22px;border-bottom:1.5px solid var(--red)}
+.top img{height:34px;width:auto}
+.top .where{font-family:var(--mono);font-weight:600;font-size:13.4px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:right;line-height:1.5}
+
+/* Type */
+.label{font-family:var(--mono);font-weight:600;font-size:14.6px;letter-spacing:.18em;text-transform:uppercase;color:var(--red);margin:0 0 14px}
+.t-title{color:var(--navy);font-weight:700;text-transform:uppercase;letter-spacing:.02em;line-height:.98;font-size:clamp(44.8px,8vw,85.1px);margin:0}
+.t-head{color:var(--navy);font-weight:700;letter-spacing:-.015em;line-height:1.12;font-size:clamp(29.1px,4.4vw,40.3px);margin:0 0 10px}
+.t-sub{color:var(--navy);font-weight:700;letter-spacing:-.01em;line-height:1.2;font-size:24.6px;margin:0 0 6px}
+.lead{font-size:22.4px;line-height:1.45;margin:0 0 14px;max-width:62ch}
+.muted{color:var(--muted)}
+.accent{font-style:italic;color:var(--red)}
+.rule{width:72px;height:5px;background:var(--red);margin:26px 0 28px}
+p{margin:0 0 14px;max-width:64ch}
+.small{font-size:16.8px}
+.mono{font-family:var(--mono);font-weight:600;font-size:14px;letter-spacing:.1em;text-transform:uppercase}
+
+/* Screens */
+.screen{padding:44px 0 64px}
+.screen[hidden]{display:none}
+.stepbar{display:flex;align-items:center;gap:16px;margin:0 0 30px}
+.stepbar .mono{color:var(--muted);white-space:nowrap}
+.progress{flex:1;height:3px;background:var(--gray);position:relative}
+.progress i{position:absolute;left:0;top:0;bottom:0;background:var(--red);transition:width .35s ease}
+.q-block{margin:0 0 38px}
+.q-block:last-of-type{margin-bottom:10px}
+.help{color:var(--muted);font-size:17.9px;margin:0 0 18px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:var(--mono);font-weight:600;font-size:15.7px;letter-spacing:.1em;text-transform:uppercase;padding:16px 26px;border-radius:4px;border:1.5px solid transparent;cursor:pointer;text-decoration:none;line-height:1;background:none}
+.btn-primary{background:var(--red);color:var(--white)}
+.btn-primary:hover{filter:brightness(.92)}
+.btn-primary[disabled]{background:#e9e6e6;color:#8d8787;cursor:not-allowed;filter:none}
+.btn-secondary{border-color:var(--navy);color:var(--navy)}
+.btn-secondary:hover{background:var(--navy);color:var(--white)}
+.btn-text{padding:16px 4px;color:var(--navy);text-decoration:underline;text-underline-offset:4px}
+.btn-small{padding:10px 14px;font-size:13.4px}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:40px;padding-top:24px;border-top:1px solid var(--line)}
+.nav .hint{font-size:15.7px;color:var(--muted);text-align:right}
+
+/* Chips (multi-select) */
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{border:1.5px solid var(--line);background:var(--white);border-radius:4px;padding:10px 14px;font-size:17.4px;line-height:1.2;cursor:pointer;text-align:left;transition:background .12s,border-color .12s,color .12s}
+.chip:hover{border-color:var(--navy)}
+.chip[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:var(--white)}
+.chip.no[aria-pressed="true"]{background:var(--white);color:var(--navy);border-color:var(--navy);text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:2px}
+.chip small{display:block;font-size:14.6px;opacity:.72;margin-top:3px}
+
+/* Option rows (single select / cards) */
+.opts{display:grid;gap:10px}
+.opt{display:block;width:100%;text-align:left;border:1.5px solid var(--line);border-left:6px solid var(--line);background:var(--white);padding:16px 18px;cursor:pointer;font-size:19px;line-height:1.4;transition:border-color .12s}
+.opt:hover{border-color:var(--line-strong);border-left-color:var(--line-strong)}
+.opt[aria-pressed="true"]{border-color:var(--navy);border-left-color:var(--red)}
+.opt .sub{display:block;font-size:16.2px;color:var(--muted);margin-top:4px}
+.opt.idk{background:var(--gray)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:620px){.grid2{grid-template-columns:1fr}}
+
+/* Inputs */
+.field{display:block;margin:0 0 18px}
+.field span{display:block;font-family:var(--mono);font-weight:600;font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+input[type=text],textarea{width:100%;border:1.5px solid var(--line-strong);border-radius:0;padding:14px 16px;font:inherit;font-size:19px;background:var(--white);color:var(--black)}
+input[type=text]:focus,textarea:focus{outline:none;border-color:var(--navy);box-shadow:inset 0 0 0 1px var(--navy)}
+textarea{min-height:190px;resize:vertical;line-height:1.5}
+.toggle{display:flex;align-items:center;gap:12px;cursor:pointer;font-size:17.9px;margin-top:6px}
+.toggle input{width:20px;height:20px;accent-color:var(--navy)}
+
+/* Blocks */
+.callout{background:var(--gray);padding:22px 24px;margin:26px 0}
+.callout .label{color:var(--red);margin-bottom:8px}
+.callout p:last-child{margin-bottom:0}
+.dash{list-style:none;padding:0;margin:0 0 14px}
+.dash li{position:relative;padding-left:26px;margin:0 0 8px}
+.dash li::before{content:"";position:absolute;left:0;top:.72em;width:14px;height:3px;background:var(--red)}
+.tag{display:inline-block;font-family:var(--mono);font-weight:600;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);line-height:1.3;white-space:nowrap}
+.tag.red{color:var(--red)}
+.tag.fill{color:var(--navy)}
+
+/* Navy block: the only dark ground. White text, lime accents, never red */
+.navy{background:var(--navy);color:var(--white);padding:52px 44px;margin:44px 0 0}
+.navy .label{color:var(--lime)}
+.navy .t-head,.navy .t-title,.navy .t-sub,.navy h2,.navy h3,.navy strong{color:var(--white)}
+.navy .accent{color:var(--lime)}
+.navy p{color:#fff}
+.navy .dash li::before{background:var(--lime)}
+.navy .btn-light{background:var(--white);color:var(--navy)}
+.navy .btn-light:hover{filter:brightness(.94)}
+.navy .btn-ghost{border-color:var(--white);color:var(--white)}
+.navy .btn-ghost:hover{background:var(--white);color:var(--navy)}
+.navy .foot-logo{height:28px;width:auto;margin-top:36px}
+.navy :focus-visible{outline-color:var(--lime)}
+/* The one flourish: a hand-drawn lime underline under one key phrase, navy only */
+.scribble{position:relative;white-space:nowrap;display:inline-block}
+.scribble svg{position:absolute;left:-2%;bottom:-.34em;width:104%;height:.5em;overflow:visible;pointer-events:none}
+.scribble path{fill:none;stroke:var(--lime);stroke-width:4;stroke-linecap:round}
+@media (max-width:620px){.navy{padding:40px 24px;margin-left:-24px;margin-right:-24px}}
+
+/* Builder notes (internal) */
+.builder{margin:56px 0 0;border:1.5px dashed var(--line-strong);padding:0}
+.builder summary{cursor:pointer;padding:16px 20px;font-family:var(--mono);font-weight:600;font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);list-style:none}
+.builder summary::-webkit-details-marker{display:none}
+.builder summary::after{content:"+";float:right;font-size:17.9px}
+.builder[open] summary::after{content:"\2013"}
+.builder .inner{padding:0 20px 20px;font-size:16.8px}
+.builder .inner p,.builder .inner li{max-width:none}
+
+.foot{border-top:1px solid var(--line);margin-top:56px;padding:22px 0 40px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.foot .mono{color:var(--muted)}
+
+.btnrow{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:22px}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+@media print{
+  .top .where,.nav,.btnrow,.builder,.no-print,.foot{display:none!important}
+  .screen{padding:18px 0}
+  .navy{display:none}
+  body{font-size:14.6px}
+}
+
+/* Song Picker specific */
+.genre-group{margin:0 0 26px}
+.genre-group h3{font-family:var(--mono);font-weight:600;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.count{font-family:var(--mono);font-weight:600;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--red)}
+.vibe-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:620px){.vibe-grid{grid-template-columns:1fr}}
+
+.sheet-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+.client{font-family:var(--mono);font-weight:600;font-size:14.6px;letter-spacing:.14em;text-transform:uppercase;border-bottom:1.5px solid var(--navy);padding-bottom:6px;min-width:240px}
+.section{margin:46px 0 0}
+.section-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;border-bottom:1.5px solid var(--navy);padding-bottom:10px;margin-bottom:6px}
+.section-head .num{color:var(--red);font-weight:700;font-size:31.4px;line-height:1}
+.section-head h2{color:var(--navy);font-weight:700;text-transform:uppercase;letter-spacing:.02em;font-size:29.1px;margin:0;line-height:1}
+.section-head .kind{font-family:var(--mono);font-weight:600;font-size:13.4px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-left:auto}
+.section .how{font-size:17.4px;color:var(--muted);margin:10px 0 4px}
+.slot{display:grid;grid-template-columns:150px 1fr auto;gap:18px;align-items:start;padding:18px 0;border-bottom:1px solid var(--line)}
+.slot .which{font-family:var(--mono);font-weight:600;font-size:13.4px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);padding-top:5px}
+.slot .song{color:var(--navy);font-weight:700;font-size:22.4px;line-height:1.2}
+.slot .artist{font-size:17.9px;margin-top:2px}
+.slot .meta{display:flex;gap:6px 18px;flex-wrap:wrap;margin-top:10px}
+.slot .why{font-size:16.8px;color:var(--muted);margin:10px 0 0;max-width:56ch}
+.slot .swap{align-self:center}
+.slot.enter{animation:slotIn .45s ease both}
+@keyframes slotIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (max-width:620px){.section-head h2{font-size:23.5px}.section-head .num{font-size:24.6px}.section-head .kind{margin-left:0;width:100%}.slot{grid-template-columns:1fr;gap:6px}.slot .swap{justify-self:start;margin-top:6px}}
+.crowd{columns:2;column-gap:28px;margin-top:8px}
+.crowd li{break-inside:avoid}
+@media (max-width:620px){.crowd{columns:1}}
+.loading{padding:120px 0;text-align:left}
+.loading .bars{display:flex;gap:6px;align-items:flex-end;height:48px;margin-bottom:24px}
+.loading .bars i{width:8px;background:var(--red);border-radius:4px;animation:bar 1s ease-in-out infinite}
+.loading .bars i:nth-child(2){animation-delay:.12s}.loading .bars i:nth-child(3){animation-delay:.24s}.loading .bars i:nth-child(4){animation-delay:.36s}.loading .bars i:nth-child(5){animation-delay:.48s}.loading .bars i:nth-child(6){animation-delay:.6s}.loading .bars i:nth-child(7){animation-delay:.72s}
+@keyframes bar{0%,100%{height:14px}50%{height:48px}}
+@media print{.slot .swap{display:none}.slot{grid-template-columns:140px 1fr}.section{margin-top:22px}.crowd-wrap{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAbgAAACJCAYAAABemy0PAAA9IUlEQVR42u29eYCsV1nn/3nOW9V7901uEhJC9oRINnKDwCCyJDCgoAgOJjj8RJEZlQHGGZeBiPP7JUEQl8ERZ2QGdWZkVJxJRHZH/amJ7DtJSEJyk5A9gSwkvd1eqt7zzB/nnKq3q+tdqruqurr7fLW4N7erq877vuc83/N9zrNARERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERExAhDQRSMQqJQuxZq/u/J1f5PhcT/e/iZUZB49yIiIkYJ+8ooKcg1YC4FFbDx8bfvy3WQXAx2O/dFwVwH5mJIBXSfridT/XYNbQ4mPbzXMpxn18u9ykO6A+MY1v3pBlPRZleZW1U/a4dN0/bWyL4hOAXJGl0Fs99JTv0kl4yheOh4phvr02fUbO3sJvYMgdOs5YAY6qqMITSwrIthUVXvSTDfakjz8NTY9B3HP/LIUuazE+JGYlRIV+NtiIgKbo+T2+dg8vTJ2ac/atcfvWBt7c5O0ttPZI8j+BTgrqmpE8bq5ocs5lWq+gxETpwRoeYto2a2U5KZOAI0gSOqWOUhI3qjUflI2mh84uSVlfsBrobkUqcM9/J9TryaeD3wo/62JAWqowZ8CniP30nbAa5vBd4NnOu/2xSMqw78NfC+AY4r3KsXAz9fcq/ydvUCLAFv9H9uhcTDOH4AeFOFcYTPfzvwzQE/t7yxvgZ4bcWx/jxwX5d7Ez7rrcD3b+H+DwPWj+lrwFXbudd7nuCuAHMl6GOTkyceSeofs8gzjG0ui5FfOnlp6f37Tcllr/ee6enz6knyswivnRI5VoE1Vdbd+1KvwLKkGCaNZla8CCR1YFwEA6yofdzC1Yp5/0nz818PRHdZf1xKo4iaNxT/CXhLxd/5GPDKjMEZlFG8BPiHHn7vWcBXBjiucK/e643wdvAM4OtbNIDhd54O3NDD713pjW64jmEgjPXzwHMqvP8+4KnAegc5Z+//XwEvG/F19Rng+duZi4Y9joudQdfHMG85yvCMpjYaiWF6Re1vX8/0kwSs7h8lmwjYLxw8OPfQ3NzvjNWSr00b+Xng2HnVdEE1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" alt="O-Kaye Productions">
+    <div class="where">Module 1<br>Fundamentals + Techniques</div>
+  </header>
+
+  <main id="app">
+
+    <!-- INTRO -->
+    <section class="screen" data-screen="intro">
+      <p class="label">Practice Song Picker</p>
+      <h1 class="t-title">Pick my<br>practice songs</h1>
+      <div class="rule"></div>
+      <p class="lead">You're about to practice your fundamentals over and over. That only works if you actually like the songs.</p>
+      <p>Tell me what you love, what you dislike, and why. I'll pick your practice songs the way I would if you were sitting in my studio, by tempo for your breathing and your mouth, and by range for your neck.</p>
+      <p class="muted small">About 4 minutes. There are no wrong answers here.</p>
+      <label class="field" style="max-width:360px;margin-top:26px">
+        <span>Your first name (for your regimen sheet)</span>
+        <input type="text" id="name" autocomplete="given-name" placeholder="Optional">
+      </label>
+      <div class="btnrow"><button class="btn btn-primary" data-go="next">Start the survey</button></div>
+      <div class="callout" style="margin-top:40px">
+        <p class="label">Before you start</p>
+        <p>Songs come after the teaching. If you haven't watched the Correct Breathing, Relaxed Neck and Open Embouchure lessons yet, go watch those first. Then come back and build your list.</p>
+      </div>
+    </section>
+
+    <!-- STEP 1 -->
+    <section class="screen" data-screen="1" hidden>
+      <div class="stepbar"><span class="mono">Step 1 of 7</span><div class="progress"><i></i></div></div>
+      <div class="q-block">
+        <h2 class="t-head">Where do you sing right now?</h2>
+        <p class="help">Pick everything that fits.</p>
+        <div class="chips" data-multi="sings"></div>
+      </div>
+      <div class="q-block">
+        <h2 class="t-head">Which voice do you sing in?</h2>
+        <p class="help">This helps me pick songs in keys that sit well on you. You can always change the key of a song later.</p>
+        <div class="opts grid2" data-single="voice"></div>
+      </div>
+      <div class="nav"><button class="btn btn-text" data-go="back">Back</button><button class="btn btn-primary" data-go="next" data-need="voice">Continue</button></div>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="screen" data-screen="2" hidden>
+      <div class="stepbar"><span class="mono">Step 2 of 7</span><div class="progress"><i></i></div></div>
+      <div class="q-block">
+        <h2 class="t-head">Which kinds of music do you love to sing?</h2>
+        <p class="help">Pick as many as you like. The more you pick, the more I have to pull from. <span class="count" id="genreCount"></span></p>
+        <div class="chips" data-multi="genres"></div>
+      </div>
+      <div class="nav"><button class="btn btn-text" data-go="back">Back</button><button class="btn btn-primary" data-go="next" data-need="genres">Continue</button></div>
+    </section>
+
+    <!-- STEP 3 -->
+    <section class="screen" data-screen="3" hidden>
+      <div class="stepbar"><span class="mono">Step 3 of 7</span><div class="progress"><i></i></div></div>
+      <div class="q-block">
+        <h2 class="t-head">Who do you have on repeat?</h2>
+        <p class="help">These are pulled from the styles you just picked. Tap the singers you love to listen to, or love to sing along with.</p>
+        <div id="artistGroups"></div>
+      </div>
+      <div class="nav"><button class="btn btn-text" data-go="back">Back</button><button class="btn btn-primary" data-go="next">Continue</button></div>
+    </section>
+
+    <!-- STEP 4 -->
+    <section class="screen" data-screen="4" hidden>
+      <div class="stepbar"><span class="mono">Step 4 of 7</span><div class="progress"><i></i></div></div>
+      <div class="q-block">
+        <h2 class="t-head">What kind of songs pull you in?</h2>
+        <p class="help">No music words needed. Pick the ones that sound like you.</p>
+        <div class="vibe-grid" data-multi="vibes" data-style="opt"></div>
+      </div>
+      <div class="nav"><button class="btn btn-text" data-go="back">Back</button><button class="btn btn-primary" data-go="next" data-need="vibes">Continue</button></div>
+    </section>
+
+    <!-- STEP 5 -->
+    <section class="screen" data-screen="5" hidden>
+      <div class="stepbar"><span class="mono">Step 5 of 7</span><div class="progress"><i></i></div></div>
+      <div class="q-block">
+        <h2 class="t-head">When you listen to your favorite singers, what grabs you?</h2>
+        <p class="help">This is the "why." It tells me what you'll actually want to practice.</p>
+        <div class="chips" data-multi="draws"></div>
+      </div>
+      <div class="nav"><button class="btn btn-text" data-go="back">Back</button><button class="btn btn-primary" data-go="next" data-need="draws">Continue</button></div>
+    </section>
+
+    <!-- STEP 6 -->
+    <section class="screen" data-screen="6" hidden>
+      <div class="stepbar"><span class="mono">Step 6 of 7</span><div class="progress"><i></i></div></div>
+      <div class="q-block">
+        <h2 class="t-head">What do you want me to stay away from?</h2>
+        <p class="help">If you dislike it, you won't practice it. Tap anything you'd rather skip.</p>
+        <p class="mono muted" style="margin:18px 0 10px">Styles to skip</p>
+        <div class="chips" data-multi="noGenres" data-no="1"></div>
+        <p class="mono muted" style="margin:26px 0 10px">Feels to skip</p>
+        <div class="chips" data-multi="noVibes" data-no="1"></div>
+        <p class="mono muted" style="margin:26px 0 10px">Singers to skip</p>
+        <div class="chips" data-multi="noArtists" data-no="1"></div>
+        <label class="toggle" style="margin-top:26px"><input type="checkbox" id="clean"> Clean lyrics only, please</label>
+      </div>
+      <div class="nav"><button class="btn btn-text" data-go="back">Back</button><button class="btn btn-primary" data-go="next">Continue</button></div>
+    </section>
+
+    <!-- STEP 7 -->
+    <section class="screen" data-screen="7" hidden>
+      <div class="stepbar"><span class="mono">Step 7 of 7</span><div class="progress"><i></i></div></div>
+      <div class="q-block">
+        <h2 class="t-head">How far do you want me to push you?</h2>
+        <p class="help">Most singers pick songs that feel safe, even when they want to grow. Be honest about where you are today.</p>
+        <div class="opts" data-single="stretch"></div>
+      </div>
+      <div class="nav"><button class="btn btn-text" data-go="back">Back</button><button class="btn btn-primary" data-go="build" data-need="stretch">Build my song list</button></div>
+    </section>
+
+    <!-- LOADING -->
+    <section class="screen loading" data-screen="loading" hidden>
+      <div class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <p class="t-sub" id="loadMsg">Pulling from the library</p>
+      <p class="muted">Matching tempo, range and style to you.</p>
+    </section>
+
+    <!-- RESULTS -->
+    <section class="screen" data-screen="results" hidden>
+      <div class="sheet-head">
+        <div>
+          <p class="label">Your practice regimen</p>
+          <h1 class="t-title" style="font-size:clamp(38.1px,6vw,65px)">Your songs</h1>
+        </div>
+        <div class="client" id="clientLine">Client:</div>
+      </div>
+      <div class="rule"></div>
+      <p class="lead" id="resultIntro"></p>
+
+      <div class="callout">
+        <p class="label">Important reminders</p>
+        <p>Focus on only one thing at a time through the songs in a row. On your breathing songs, just focus on breathing correctly. Nothing else. This is how it becomes autopilot.</p>
+        <p>Your song choices can be flip-flopped between sections that match. A fast breathing song can become your fast mouth song on a different day.</p>
+      </div>
+
+      <div id="regimen"></div>
+
+      <div class="btnrow no-print" style="margin-top:34px">
+        <button class="btn btn-primary" id="printBtn">Print my regimen</button>
+        <button class="btn btn-secondary" id="editBtn">Change my answers</button>
+        <button class="btn btn-text" id="restartBtn">Start over</button>
+      </div>
+
+      <div class="crowd-wrap">
+        <div class="section">
+          <div class="section-head"><h2>Crowd pleasers</h2><span class="kind">Bonus, included</span></div>
+          <p class="how">From my Crowd Pleaser Songs list. These are the songs people know and love to hear. Good for practice, great for karaoke night, and they come back when you build a set.</p>
+          <ul class="dash crowd" id="crowdList"></ul>
+        </div>
+      </div>
+
+      <div class="navy">
+        <p class="label">Marked-Up Lyric Sheets</p>
+        <h2 class="t-head" style="color:#fff">Every song on your list already has a marked-up sheet.</h2>
+        <p>Picking the song is step one. Knowing how to approach every line is the blueprint. I've marked up each of these songs with the vocal dynamics I'd give you in a session, so you can see exactly where to slide, where to go breathy, and where to hold back.</p>
+        <p>Most ears don't hear it on their own yet. <span class="scribble">That's what the sheets are for.<svg viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true"><path d="M3 9 C 40 3, 80 12, 118 6 S 176 4, 197 8"/></svg></span></p>
+        <div class="btnrow"><a class="btn btn-light" href="#" onclick="return false">Get the lyric sheet library</a></div>
+        <img class="foot-logo" src="data:image/png;base64,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" alt="O-Kaye Productions">
+      </div>
+
+      <details class="builder">
+        <summary>Builder notes for Natalie and Rebecca (not customer-facing)</summary>
+        <div class="inner">
+          <p><strong>What is placeholder in V1:</strong> the song library below is sample data (about 200 real songs). Every BPM, key and range tag is an estimate for the demo and needs Natalie's library before launch. The lyric sheet library price and link are blank.</p>
+          <p><strong>How the match works right now:</strong> each song carries tags for genre, artist, BPM, key, voice (higher or lower), range (high, low or mid), feel, clean lyrics and crowd pleaser. The picker scores songs by artist match first, then genre, then feel and "what grabs you," then filters out anything on the skip lists. It fills Natalie's regimen slots in her order: Breathing (fast, mid, slow), Neck (high, low, high, low), Embouchure (fast, mid, slow). Tempo buckets: fast is 115 BPM and up, mid is 85 to 114, slow is under 85.</p>
+          <p><strong>What Natalie needs to supply:</strong> the real song list with BPM, key, range tag and which fundamental each song is best for. Claude then replaces this sample library, and we run 10 test personas through it to rate the matches before launch [P3-059].</p>
+          <p><strong>Open decisions this touches:</strong> Song Picker price (about $12 floated) and whether it's a checkout offer or only pitched in the lesson [P2-005] [P2-019]. Crowd Pleaser count: the list has 63, the bonus was called "50" [verify].</p>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <footer class="foot"><span class="mono">O-Kaye Productions</span><span class="mono">Practice Song Picker. V1 prototype, sample data</span></footer>
+</div>
+
+<script>
+/* ---------------- Survey options ---------------- */
+const SINGS=["Church or worship team","Choir","Karaoke nights","A band or live gigs","Competitions or pageants","School or musical theatre","Recording my own songs","In the car and the shower","Just for me, at home"];
+const VOICES=[["F","Higher voice","Soprano or alto. Most women sing here."],["M","Lower voice","Tenor or baritone. Most men sing here."],["X","Not sure yet","I'll give you a mix."]];
+const GENRES=["Pop","Country","Classic Country","R&B","Soul and Motown","Hip-Hop","Rap","Rock","Classic Rock","Alternative and Indie","Metal","Christian Worship","Gospel","Contemporary Christian","Musical Theatre","Jazz and Standards","Blues","Folk and Americana","Singer-Songwriter","Latin","K-Pop","Funk and Disco","Dance and Electronic","Pop-Punk and Emo","Reggae"];
+const ARTISTS={
+"Pop":["Taylor Swift","Adele","Ariana Grande","Bruno Mars","Lady Gaga","Ed Sheeran","Billie Eilish","Olivia Rodrigo","Sabrina Carpenter","Kelly Clarkson","Justin Bieber","Dua Lipa","Maroon 5","Harry Styles","Chappell Roan","Meghan Trainor","Miley Cyrus","P!nk"],
+"Country":["Carrie Underwood","Chris Stapleton","Miranda Lambert","Luke Combs","Lainey Wilson","Kelsea Ballerini","Zach Bryan","Maren Morris","Keith Urban","Lady A","Little Big Town","Zac Brown Band","Dierks Bentley","Rascal Flatts"],
+"Classic Country":["Garth Brooks","Reba McEntire","Shania Twain","Alan Jackson","Patsy Cline","Dolly Parton","George Strait","Martina McBride","Alabama","Hank Williams Jr.","Clint Black"],
+"R&B":["Beyoncé","Alicia Keys","SZA","Usher","John Legend","Whitney Houston","Mariah Carey","H.E.R.","Daniel Caesar","Jazmine Sullivan","Michael Jackson"],
+"Soul and Motown":["Aretha Franklin","Stevie Wonder","The Temptations","Etta James","James Brown","Jackson 5","Al Green","Commodores","Marvin Gaye"],
+"Hip-Hop":["Lauryn Hill","Post Malone","Lizzo","Doja Cat","Drake","Kendrick Lamar"],
+"Rap":["Eminem","Nicki Minaj","Missy Elliott","Limp Bizkit","Lil Wayne"],
+"Rock":["Foo Fighters","Imagine Dragons","Kings of Leon","Paramore","The Killers","Halestorm","Shinedown","P!nk"],
+"Classic Rock":["Journey","Queen","Heart","Fleetwood Mac","Bon Jovi","Pat Benatar","Janis Joplin","Neil Diamond","Bonnie Raitt"],
+"Alternative and Indie":["Florence + The Machine","Hozier","Lana Del Rey","The Lumineers","Lorde","Twenty One Pilots","No Doubt"],
+"Metal":["Evanescence","Linkin Park","Metallica","System of a Down","Avenged Sevenfold"],
+"Christian Worship":["Elevation Worship","Bethel Music","Hillsong Worship","Maverick City Music","Brandon Lake","Phil Wickham","Chris Tomlin","Kari Jobe","Cody Carnes"],
+"Gospel":["CeCe Winans","Kirk Franklin","Tasha Cobbs Leonard","Yolanda Adams","Tamela Mann","Hezekiah Walker"],
+"Contemporary Christian":["Lauren Daigle","for KING & COUNTRY","Casting Crowns","TobyMac","Zach Williams","MercyMe","Tauren Wells","Anne Wilson"],
+"Musical Theatre":["Wicked","Les Misérables","Hamilton","Dear Evan Hansen","The Greatest Showman","Waitress"],
+"Jazz and Standards":["Frank Sinatra","Michael Bublé","Norah Jones","Ella Fitzgerald","Nat King Cole"],
+"Blues":["B.B. King","Bonnie Raitt","Etta James","Tracy Chapman"],
+"Folk and Americana":["Brandi Carlile","Noah Kahan","The Chicks","The Lumineers","Old Crow Medicine Show"],
+"Singer-Songwriter":["Tracy Chapman","John Mayer","Sara Bareilles","Carole King","Ed Sheeran"],
+"Latin":["Shakira","Selena","Marc Anthony","Camila Cabello","Karol G"],
+"K-Pop":["BTS","BLACKPINK","NewJeans"],
+"Funk and Disco":["Earth, Wind & Fire","Gloria Gaynor","Kool & The Gang","Bee Gees","Commodores"],
+"Dance and Electronic":["David Guetta","Zedd","Robyn","Calvin Harris","Rihanna"],
+"Pop-Punk and Emo":["Paramore","blink-182","Fall Out Boy","My Chemical Romance","Green Day"],
+"Reggae":["Bob Marley","UB40"]
+};
+const VIBES=[["dance","Makes me want to move"],["belt","Big notes I can belt"],["story","Tells a story"],["chill","Laid-back and easy"],["emotional","Makes me feel something deep"],["attitude","Sassy, with some attitude"],["smooth","Smooth and silky"],["gritty","Raw and a little gritty"],["worship","Lifts me up in worship"],["singalong","Everybody knows the words"],["wordy","Fast, with lots of words"],["dreamy","Dreamy and floaty"],["runs","Runs and riffs"],["dramatic","Big, dramatic moments"]];
+const DRAWS=[["tone","Their tone, the sound of their voice"],["power","How powerful they are"],["runs","Their runs and riffs"],["meaning","How much they mean every word"],["story","The lyrics and the story"],["swagger","Their style and swagger"],["easy","How easy they make it sound"],["groove","The groove"],["stage","How they perform on stage"]];
+const DRAW_TAGS={tone:["smooth"],power:["belt","dramatic"],runs:["runs"],meaning:["emotional"],story:["story"],swagger:["attitude"],easy:["smooth","chill"],groove:["dance"],stage:["singalong","dance"]};
+const NOVIBES=[["slow","Too slow and sleepy"],["scream","Too much screaming"],["rap","Too much rapping"],["twang","Too twangy"],["sad","Too sad"]];
+const STRETCH=[["comfort","Keep me comfortable for now","I'm still getting the fundamentals down."],["little","Stretch me a little","Mostly comfortable, with a few songs that make me reach."],["push","Push me. I want to grow.","Give me the songs I'd never pick for myself."]];
+
+/* ---------------- Sample library (placeholder data) ----------------
+ [title, artist, genres, bpm, key, voice F/M, range high|low|mid, tags, clean, crowd] */
+const L=`Rolling in the Deep|Adele|Pop,Soul and Motown|105|C min|F|low|belt,attitude,gritty|1|0
+Someone Like You|Adele|Pop|68|A|F|high|emotional|1|0
+Shake It Off|Taylor Swift|Pop|160|G|F|mid|dance,singalong|1|0
+Love Story|Taylor Swift|Pop,Country|119|D|F|mid|story,singalong|1|0
+All Too Well|Taylor Swift|Pop,Country|93|C|F|low|story,emotional|0|0
+Shallow|Lady Gaga|Pop,Rock|96|G|F|high|belt,dramatic,emotional|1|1
+Bad Romance|Lady Gaga|Pop,Dance and Electronic|119|A min|F|mid|dance,attitude|1|1
+thank u, next|Ariana Grande|Pop,R&B|107|D|F|low|smooth,attitude|0|0
+Treasure|Bruno Mars|Pop,Funk and Disco|116|C min|M|high|dance|1|1
+Uptown Funk|Bruno Mars|Pop,Funk and Disco|115|D min|M|mid|dance,attitude|1|0
+When I Was Your Man|Bruno Mars|Pop|73|C|M|high|emotional|1|0
+Perfect|Ed Sheeran|Pop,Singer-Songwriter|63|Ab|M|high|smooth,emotional|1|0
+Thinking Out Loud|Ed Sheeran|Pop,Singer-Songwriter|79|D|M|low|smooth|1|0
+Shape of You|Ed Sheeran|Pop|96|C# min|M|low|wordy,dance|1|0
+drivers license|Olivia Rodrigo|Pop|72|Bb|F|high|emotional|0|0
+good 4 u|Olivia Rodrigo|Pop,Pop-Punk and Emo|166|F# min|F|mid|attitude,gritty|0|0
+Espresso|Sabrina Carpenter|Pop|104|C|F|low|attitude,smooth|0|0
+Since U Been Gone|Kelly Clarkson|Pop,Rock|131|G|F|high|belt,attitude|1|0
+Because of You|Kelly Clarkson|Pop|70|Eb|F|high|emotional|1|0
+Love Yourself|Justin Bieber|Pop|100|E|M|low|chill|1|1
+Levitating|Dua Lipa|Pop,Dance and Electronic|103|B min|F|low|dance|1|0
+Payphone|Maroon 5|Pop|110|E|M|high|singalong|0|1
+Sunday Morning|Maroon 5|Pop|88|C|M|mid|smooth,chill|1|1
+Maps|Maroon 5|Pop|120|C# min|M|high|emotional|1|1
+As It Was|Harry Styles|Pop|174|F#|M|mid|dreamy|1|0
+Good Luck, Babe!|Chappell Roan|Pop|117|F|F|high|belt,dramatic|1|0
+No|Meghan Trainor|Pop|92|F|F|low|attitude|1|1
+Lips Are Movin|Meghan Trainor|Pop|139|F|F|mid|singalong|1|1
+bad guy|Billie Eilish|Pop,Alternative and Indie|135|G min|F|low|attitude,dreamy|1|0
+What Was I Made For?|Billie Eilish|Pop|78|C|F|high|dreamy,emotional|1|0
+Stay|Zedd & Alessia Cara|Pop,Dance and Electronic|102|F|F|high|dance|1|1
+Without Me|Halsey|Pop|136|F# min|F|low|emotional|0|1
+Party in the U.S.A.|Miley Cyrus|Pop|96|F#|F|low|singalong|1|1
+Rich Girl|Gwen Stefani|Pop|98|F min|F|low|attitude|1|1
+Try|P!nk|Pop,Rock|104|Db|F|high|belt,emotional|1|0
+Just Give Me a Reason|P!nk|Pop|95|Bb|F|high|emotional|1|0
+Don't Speak|No Doubt|Alternative and Indie,Rock|76|C min|F|high|emotional|1|1
+Before He Cheats|Carrie Underwood|Country|148|F# min|F|high|attitude,belt|1|0
+Jesus, Take the Wheel|Carrie Underwood|Country,Contemporary Christian|70|B|F|high|emotional,story|1|0
+Tennessee Whiskey|Chris Stapleton|Country,Soul and Motown|48|A|M|low|smooth,gritty,runs|1|0
+Nobody to Blame|Chris Stapleton|Country|69|E|M|low|gritty,story|1|1
+Mama's Broken Heart|Miranda Lambert|Country|164|G|F|mid|attitude|1|1
+Baggage Claim|Miranda Lambert|Country|133|D|F|mid|attitude|1|1
+The House That Built Me|Miranda Lambert|Country|70|G|F|low|story,emotional|1|0
+Fast Car|Luke Combs|Country|98|C|M|low|story|1|0
+Beautiful Crazy|Luke Combs|Country|65|Eb|M|low|smooth|1|0
+Watermelon Moonshine|Lainey Wilson|Country|78|E|F|low|story|1|0
+Heart Like a Truck|Lainey Wilson|Country|128|A|F|low|gritty,attitude|1|0
+Peter Pan|Kelsea Ballerini|Country|76|C|F|high|emotional,story|1|1
+Something in the Orange|Zach Bryan|Country,Folk and Americana|76|B|M|low|emotional,story|1|0
+Somebody Like You|Keith Urban|Country|135|C#|M|mid|singalong|1|1
+Bartender|Lady A|Country|125|G|F|mid|dance|1|1
+Compass|Lady A|Country|100|A|F|high|singalong|1|1
+Little White Church|Little Big Town|Country|100|E min|F|low|attitude,gritty|1|1
+Toes|Zac Brown Band|Country|80|G|M|low|chill,singalong|0|1
+The Middle|Zedd & Maren Morris|Pop,Dance and Electronic|107|D|F|high|dance|1|1
+The Bones|Maren Morris|Country,Pop|94|G|F|low|chill|1|1
+Road Less Traveled|Lauren Alaina|Country|142|A|F|mid|singalong|1|1
+What Was I Thinkin'|Dierks Bentley|Country|140|D|M|mid|story|1|1
+Life Is a Highway|Rascal Flatts|Country,Rock|103|F|M|high|singalong|1|1
+Be My Baby Tonight|John Michael Montgomery|Country|142|G|M|mid|singalong|1|1
+Friends in Low Places|Garth Brooks|Classic Country|101|A|M|low|singalong|1|1
+Ain't Goin' Down ('Til the Sun Comes Up)|Garth Brooks|Classic Country|170|G|M|mid|wordy|1|1
+Two Piña Coladas|Garth Brooks|Classic Country|130|D|M|mid|singalong|1|1
+Longneck Bottle|Garth Brooks|Classic Country|140|G|M|mid|singalong|1|1
+Fancy|Reba McEntire|Classic Country|96|E min|F|low|story,attitude|1|0
+Why Haven't I Heard From You|Reba McEntire|Classic Country|150|E|F|high|attitude|1|1
+Any Man of Mine|Shania Twain|Classic Country|116|A|F|low|attitude|1|1
+You're Still the One|Shania Twain|Classic Country|67|A|F|low|smooth,emotional|1|0
+It's Five O'Clock Somewhere|Alan Jackson|Classic Country|95|C|M|low|chill|1|1
+Crazy|Patsy Cline|Classic Country|72|Bb|F|low|emotional,smooth|1|0
+Jolene|Dolly Parton|Classic Country|111|C# min|F|high|story|1|0
+Song of the South|Alabama|Classic Country|130|F|M|mid|singalong|1|1
+Family Tradition|Hank Williams Jr.|Classic Country|120|E|M|low|gritty|0|1
+Killin' Time|Clint Black|Classic Country|150|A|M|mid|singalong|1|1
+You Never Even Called Me by My Name|David Allan Coe|Classic Country|90|G|M|low|story,singalong|1|1
+Independence Day|Martina McBride|Classic Country|90|D|F|high|belt,story|1|0
+Amarillo by Morning|George Strait|Classic Country|84|D|M|low|story,smooth|1|0
+Halo|Beyoncé|R&B,Pop|80|A|F|high|belt,emotional|1|0
+Crazy in Love|Beyoncé|R&B|99|D min|F|low|dance,attitude|1|0
+Listen|Beyoncé|R&B|60|D|F|high|belt,dramatic|1|0
+If I Ain't Got You|Alicia Keys|R&B,Soul and Motown|60|G|F|mid|emotional,runs|1|0
+Fallin'|Alicia Keys|R&B|68|E min|F|low|gritty,runs|1|0
+Kill Bill|SZA|R&B|89|G# min|F|low|smooth,attitude|0|0
+U Got It Bad|Usher|R&B|64|G|M|high|smooth,runs|1|0
+Best Part|Daniel Caesar & H.E.R.|R&B|75|E|M|mid|smooth|1|0
+All of Me|John Legend|R&B,Pop|63|Ab|M|high|emotional|1|0
+I Wanna Dance with Somebody|Whitney Houston|R&B,Pop|119|G|F|high|dance,singalong|1|0
+I Will Always Love You|Whitney Houston|R&B|68|A|F|high|belt,dramatic,runs|1|0
+Hero|Mariah Carey|R&B,Pop|60|E|F|high|belt,runs,emotional|1|0
+Always Be My Baby|Mariah Carey|R&B|80|E|F|high|runs,smooth|1|0
+Bust Your Windows|Jazmine Sullivan|R&B|86|D min|F|high|belt,attitude|1|0
+Rock With You|Michael Jackson|R&B,Pop|114|Eb min|M|high|dance,smooth|1|1
+Respect|Aretha Franklin|Soul and Motown|115|C|F|mid|belt,attitude|1|0
+(You Make Me Feel Like) A Natural Woman|Aretha Franklin|Soul and Motown|60|Bb|F|high|belt,emotional|1|0
+Superstition|Stevie Wonder|Soul and Motown,Funk and Disco|100|Eb min|M|mid|gritty,dance|1|1
+Signed, Sealed, Delivered I'm Yours|Stevie Wonder|Soul and Motown|110|F|M|high|singalong|1|1
+Isn't She Lovely|Stevie Wonder|Soul and Motown|119|C# min|M|mid|chill|1|1
+My Girl|The Temptations|Soul and Motown|104|C|M|mid|smooth,singalong|1|0
+Ain't Too Proud to Beg|The Temptations|Soul and Motown|130|C|M|high|singalong|1|1
+I Heard It Through the Grapevine|The Temptations|Soul and Motown|116|Eb min|M|mid|gritty|1|1
+I Got You (I Feel Good)|James Brown|Soul and Motown,Funk and Disco|140|D|M|high|gritty,attitude|1|1
+At Last|Etta James|Soul and Motown,Jazz and Standards,Blues|58|F|F|low|smooth,dramatic|1|0
+I Want You Back|Jackson 5|Soul and Motown,Pop|98|Ab|M|high|dance|1|1
+Drift Away|Dobie Gray|Soul and Motown|110|D|M|mid|singalong|1|1
+Let's Stay Together|Al Green|Soul and Motown,R&B|102|F|M|high|smooth|1|0
+Brick House|Commodores|Funk and Disco,Soul and Motown|109|A min|M|low|dance,gritty|1|1
+What's Going On|Marvin Gaye|Soul and Motown|102|E|M|mid|smooth|1|0
+September|Earth, Wind & Fire|Funk and Disco|126|A|M|high|dance,singalong|1|1
+Shining Star|Earth, Wind & Fire|Funk and Disco|126|E min|M|high|dance|1|1
+I Will Survive|Gloria Gaynor|Funk and Disco|117|A min|F|mid|belt,dance|1|0
+Celebration|Kool & The Gang|Funk and Disco|121|Ab|M|mid|dance,singalong|1|0
+Stayin' Alive|Bee Gees|Funk and Disco|104|F min|M|high|dance|1|0
+Lose Yourself|Eminem|Rap,Hip-Hop|171|D min|M|low|wordy,gritty|0|1
+Rollin' (Air Raid Vehicle)|Limp Bizkit|Rap,Rock|95|C|M|low|wordy,attitude|0|1
+Doo Wop (That Thing)|Lauryn Hill|Hip-Hop,R&B|100|D min|F|low|wordy,attitude|1|0
+Killing Me Softly|Fugees (Lauryn Hill)|Hip-Hop,R&B|92|E min|F|low|smooth|1|0
+Circles|Post Malone|Hip-Hop,Pop|120|C|M|mid|chill,dreamy|1|0
+Sunflower|Post Malone & Swae Lee|Hip-Hop,Pop|90|D|M|high|chill|1|0
+Good as Hell|Lizzo|Hip-Hop,Pop|96|Ab|F|high|attitude,belt|0|0
+Say So|Doja Cat|Hip-Hop,Pop|111|Ab|F|low|smooth,dance|1|0
+Super Bass|Nicki Minaj|Rap,Pop|127|B|F|low|wordy,attitude|0|0
+Work It|Missy Elliott|Rap,Hip-Hop|102|D|F|low|wordy,attitude|0|0
+Hotline Bling|Drake|Hip-Hop,R&B|135|D min|M|low|chill|1|0
+Learn to Fly|Foo Fighters|Rock|136|B|M|high|singalong|1|0
+Everlong|Foo Fighters|Rock|158|D|M|mid|gritty|1|0
+Believer|Imagine Dragons|Rock,Pop|125|Bb min|M|mid|gritty,attitude|1|0
+Demons|Imagine Dragons|Rock,Pop|90|Eb|M|high|emotional|1|0
+Use Somebody|Kings of Leon|Rock|137|C|M|high|gritty,belt|1|0
+Ain't It Fun|Paramore|Rock,Pop-Punk and Emo|102|E|F|high|attitude|1|1
+Misery Business|Paramore|Pop-Punk and Emo,Rock|173|Ab|F|high|attitude|1|0
+Mr. Brightside|The Killers|Rock,Alternative and Indie|148|Db|M|high|singalong|1|0
+I Miss the Misery|Halestorm|Rock,Metal|124|E|F|high|gritty,belt|0|0
+Second Chance|Shinedown|Rock|104|D|M|high|emotional,belt|1|0
+Don't Stop Believin'|Journey|Classic Rock|119|E|M|high|singalong,belt|1|0
+Separate Ways (Worlds Apart)|Journey|Classic Rock|131|E min|M|high|belt,dramatic|1|1
+Wheel in the Sky|Journey|Classic Rock|118|B min|M|high|singalong|1|1
+Bohemian Rhapsody|Queen|Classic Rock|72|Bb|M|high|dramatic|1|0
+Somebody to Love|Queen|Classic Rock|111|Ab|M|high|belt,runs|1|0
+Alone|Heart|Classic Rock|88|D|F|high|belt,dramatic|1|0
+Dreams|Fleetwood Mac|Classic Rock|120|A min|F|low|dreamy,chill|1|0
+Landslide|Fleetwood Mac|Classic Rock,Folk and Americana|80|Eb|F|low|story,emotional|1|0
+Livin' on a Prayer|Bon Jovi|Classic Rock|123|E min|M|high|singalong,belt|1|0
+Heartbreaker|Pat Benatar|Classic Rock|133|E min|F|high|gritty,attitude|1|0
+Piece of My Heart|Janis Joplin|Classic Rock,Blues|116|E|F|high|gritty,belt|1|0
+Sweet Caroline|Neil Diamond|Classic Rock,Pop|128|B|M|low|singalong|1|1
+Something to Talk About|Bonnie Raitt|Classic Rock,Blues|98|G|F|low|gritty|1|1
+I Can't Make You Love Me|Bonnie Raitt|Blues,Classic Rock|70|D|F|low|emotional|1|0
+Dog Days Are Over|Florence + The Machine|Alternative and Indie|150|Bb|F|high|belt,dramatic|1|0
+Shake It Out|Florence + The Machine|Alternative and Indie|107|C|F|high|belt,dramatic|1|0
+Take Me to Church|Hozier|Alternative and Indie|65|E min|M|mid|gritty,dramatic|1|0
+Summertime Sadness|Lana Del Rey|Alternative and Indie|112|C# min|F|low|dreamy|1|0
+Ho Hey|The Lumineers|Alternative and Indie,Folk and Americana|80|C|M|low|singalong,story|1|0
+Royals|Lorde|Alternative and Indie,Pop|85|D|F|low|attitude|1|0
+Stressed Out|Twenty One Pilots|Alternative and Indie|85|E min|M|low|wordy|1|0
+Bring Me to Life|Evanescence|Metal,Rock|95|E min|F|high|dramatic,belt,gritty|1|0
+My Immortal|Evanescence|Metal,Rock|78|A|F|high|emotional|1|0
+In the End|Linkin Park|Metal,Rock|105|Eb min|M|low|wordy,gritty|1|0
+Numb|Linkin Park|Metal,Rock|110|F# min|M|high|gritty,emotional|1|0
+Nothing Else Matters|Metallica|Metal|69|E min|M|low|emotional|1|0
+Enter Sandman|Metallica|Metal|123|E min|M|low|gritty|1|0
+Chop Suey!|System of a Down|Metal|127|G min|M|high|gritty|0|0
+Hail to the King|Avenged Sevenfold|Metal|118|C# min|M|mid|gritty|1|0
+Graves Into Gardens|Elevation Worship|Christian Worship|70|B|M|high|worship,belt|1|0
+Do It Again|Elevation Worship|Christian Worship|84|B|M|high|worship,emotional|1|0
+Won't Stop Now|Elevation Worship|Christian Worship|136|A|M|mid|worship,singalong|1|0
+See a Victory|Elevation Worship|Christian Worship|88|C|M|high|worship,singalong|1|0
+Goodness of God|Bethel Music|Christian Worship|63|Ab|F|low|worship,emotional|1|0
+Raise a Hallelujah|Bethel Music|Christian Worship|82|C|F|high|worship,belt|1|0
+What a Beautiful Name|Hillsong Worship|Christian Worship|68|D|F|high|worship,emotional|1|0
+Oceans (Where Feet May Fail)|Hillsong UNITED|Christian Worship|64|D|F|high|worship,dreamy|1|0
+Jireh|Maverick City Music|Christian Worship,Gospel|70|Bb|F|mid|worship,runs|1|0
+Gratitude|Brandon Lake|Christian Worship|74|B|M|high|worship,belt|1|0
+Praise|Brandon Lake|Christian Worship|127|B|M|high|worship,singalong|1|0
+This Is Amazing Grace|Phil Wickham|Christian Worship|103|B|M|high|worship,singalong|1|0
+Battle Belongs|Phil Wickham|Christian Worship|80|A|M|high|worship,belt|1|0
+How Great Is Our God|Chris Tomlin|Christian Worship|76|C|M|low|worship,singalong|1|0
+Holy Forever|Chris Tomlin|Christian Worship|72|B|M|high|worship|1|0
+The Blessing|Kari Jobe & Cody Carnes|Christian Worship|70|B|F|high|worship|1|0
+Firm Foundation (He Won't)|Cody Carnes|Christian Worship|76|B|M|high|worship|1|0
+Believe For It|CeCe Winans|Gospel,Christian Worship|68|Bb|F|low|worship,runs|1|0
+Alabaster Box|CeCe Winans|Gospel|60|Ab|F|high|runs,emotional|1|0
+I Smile|Kirk Franklin|Gospel|104|Ab|M|high|singalong,worship|1|0
+Stomp|Kirk Franklin|Gospel,Funk and Disco|105|F|M|mid|dance,worship|1|0
+Break Every Chain|Tasha Cobbs Leonard|Gospel,Christian Worship|72|Eb|F|high|belt,worship|1|0
+Victory|Yolanda Adams|Gospel|110|Ab|F|high|belt,runs|1|0
+Take Me to the King|Tamela Mann|Gospel|70|Bb|F|high|belt,runs,emotional|1|0
+Every Praise|Hezekiah Walker|Gospel|128|Eb|M|mid|singalong,worship|1|0
+You Say|Lauren Daigle|Contemporary Christian|74|Bb|F|low|emotional|1|0
+Rescue|Lauren Daigle|Contemporary Christian|75|E|F|high|emotional|1|0
+joy.|for KING & COUNTRY|Contemporary Christian|120|C|M|high|singalong|1|0
+God Only Knows|for KING & COUNTRY|Contemporary Christian|78|C|M|high|emotional|1|0
+Who Am I|Casting Crowns|Contemporary Christian|72|B|M|low|worship|1|0
+Speak Life|TobyMac|Contemporary Christian|110|B|M|low|singalong|1|0
+Chain Breaker|Zach Williams|Contemporary Christian|122|A|M|low|gritty|1|0
+Fear Is a Liar|Zach Williams|Contemporary Christian|80|Eb|M|low|gritty,emotional|1|0
+I Can Only Imagine|MercyMe|Contemporary Christian|76|D|M|high|emotional,worship|1|0
+Hills and Valleys|Tauren Wells|Contemporary Christian|72|D|M|high|emotional|1|0
+My Jesus|Anne Wilson|Contemporary Christian,Country|82|G|F|high|story,worship|1|0
+Defying Gravity|Wicked|Musical Theatre|120|Db|F|high|belt,dramatic|1|0
+Popular|Wicked|Musical Theatre|115|Bb|F|mid|attitude|1|0
+On My Own|Les Misérables|Musical Theatre|70|D|F|mid|emotional|1|0
+Bring Him Home|Les Misérables|Musical Theatre|62|A|M|high|emotional,dreamy|1|0
+My Shot|Hamilton|Musical Theatre|95|Eb min|M|low|wordy|0|0
+Waving Through a Window|Dear Evan Hansen|Musical Theatre|120|B|M|high|belt|1|0
+This Is Me|The Greatest Showman|Musical Theatre|96|D|F|low|belt,dramatic|1|0
+Never Enough|The Greatest Showman|Musical Theatre|60|D|F|high|belt,dramatic|1|0
+She Used to Be Mine|Waitress|Musical Theatre|80|F|F|high|emotional,story|1|0
+Fly Me to the Moon|Frank Sinatra|Jazz and Standards|120|C|M|low|smooth|1|0
+Feeling Good|Michael Bublé|Jazz and Standards|70|F min|M|low|dramatic,smooth|1|0
+Haven't Met You Yet|Michael Bublé|Jazz and Standards,Pop|128|Bb|M|mid|singalong|1|0
+Don't Know Why|Norah Jones|Jazz and Standards|88|Bb|F|low|chill,smooth|1|0
+Dream a Little Dream of Me|Ella Fitzgerald|Jazz and Standards|70|C|F|low|smooth|1|0
+L-O-V-E|Nat King Cole|Jazz and Standards|125|G|M|low|smooth,singalong|1|0
+The Thrill Is Gone|B.B. King|Blues|80|B min|M|low|gritty|1|0
+Give Me One Reason|Tracy Chapman|Blues,Singer-Songwriter|95|F#|F|low|gritty|1|1
+Fast Car|Tracy Chapman|Singer-Songwriter|104|C|F|low|story|1|0
+Gravity|John Mayer|Singer-Songwriter,Blues|60|G|M|mid|gritty,smooth,runs|1|0
+Brave|Sara Bareilles|Singer-Songwriter,Pop|120|Bb|F|high|singalong|1|0
+You've Got a Friend|Carole King|Singer-Songwriter|85|Ab|F|low|chill|1|0
+The Joke|Brandi Carlile|Folk and Americana|60|G|F|high|belt,dramatic|1|0
+The Story|Brandi Carlile|Folk and Americana|88|E|F|high|belt,gritty|1|0
+Stick Season|Noah Kahan|Folk and Americana|117|G|M|mid|story|1|0
+Wagon Wheel|Old Crow Medicine Show|Folk and Americana,Country|145|A|M|mid|singalong|1|0
+Wide Open Spaces|The Chicks|Folk and Americana,Country|128|E|F|mid|singalong|1|0
+Hips Don't Lie|Shakira|Latin,Pop|100|Bb min|F|mid|dance|1|0
+Whenever, Wherever|Shakira|Latin,Pop|108|C# min|F|mid|dance|1|0
+Bidi Bidi Bom Bom|Selena|Latin|110|D|F|low|dance|1|0
+Vivir Mi Vida|Marc Anthony|Latin|104|Bb|M|high|dance|1|0
+Havana|Camila Cabello|Latin,Pop|105|G min|F|low|smooth|1|0
+Provenza|Karol G|Latin|111|A|F|low|chill|1|0
+Dynamite|BTS|K-Pop,Pop|114|E|M|high|dance,singalong|1|0
+Butter|BTS|K-Pop,Pop|110|Ab|M|mid|smooth,dance|1|0
+How You Like That|BLACKPINK|K-Pop|130|Eb min|F|low|attitude|1|0
+Super Shy|NewJeans|K-Pop|150|F|F|high|dreamy,dance|1|0
+Titanium|David Guetta ft. Sia|Dance and Electronic|126|Eb|F|high|belt,dramatic|1|0
+Clarity|Zedd ft. Foxes|Dance and Electronic|128|F|F|high|belt,dreamy|1|0
+Dancing On My Own|Robyn|Dance and Electronic|117|F#|F|mid|dance,emotional|1|0
+We Found Love|Rihanna|Dance and Electronic,Pop|128|F#|F|low|dance|1|0
+Summer|Calvin Harris|Dance and Electronic|128|D min|M|mid|dance|1|0
+All the Small Things|blink-182|Pop-Punk and Emo|148|C|M|mid|singalong|1|0
+Sugar, We're Goin Down|Fall Out Boy|Pop-Punk and Emo|161|Bb|M|high|wordy|1|0
+Welcome to the Black Parade|My Chemical Romance|Pop-Punk and Emo|96|G|M|high|dramatic|1|0
+Boulevard of Broken Dreams|Green Day|Pop-Punk and Emo,Rock|84|F min|M|mid|gritty|1|0
+Three Little Birds|Bob Marley|Reggae|74|A|M|low|chill,singalong|1|0
+Could You Be Loved|Bob Marley|Reggae|103|B min|M|low|dance|1|0
+Red Red Wine|UB40|Reggae|88|D|M|low|chill|1|0
+God Bless the U.S.A.|Lee Greenwood|Classic Country|70|C|M|high|singalong|1|1
+You Don't Own Me|Grace|Pop|60|G min|F|low|attitude,dramatic|1|1`;
+const LIB=L.split("\n").map((r,i)=>{const p=r.split("|");return{id:i,t:p[0],a:p[1],g:p[2].split(","),bpm:+p[3],key:p[4],v:p[5],rng:p[6],tags:p[7].split(","),clean:p[8]==="1",crowd:p[9]==="1"}});
+const CROWD_ORDER=["I Got You (I Feel Good)","Ain't Goin' Down ('Til the Sun Comes Up)","Baggage Claim","Be My Baby Tonight","Brick House","It's Five O'Clock Somewhere","Love Yourself","What Was I Thinkin'","Family Tradition","Bartender","Ain't Too Proud to Beg","Superstition","I Heard It Through the Grapevine","Signed, Sealed, Delivered I'm Yours","No","Two Piña Coladas","Something to Talk About","Nobody to Blame","You Don't Own Me","You Never Even Called Me by My Name","Life Is a Highway","Rock With You","Longneck Bottle","Drift Away","Separate Ways (Worlds Apart)","Compass","Peter Pan","Somebody Like You","Mama's Broken Heart","Song of the South","Give Me One Reason","Friends in Low Places","Ain't It Fun","Little White Church","Toes","Wheel in the Sky","Killin' Time","Why Haven't I Heard From You","Shining Star","September","Sweet Caroline","God Bless the U.S.A.","Any Man of Mine","Bad Romance","Shallow","Rich Girl","Don't Speak","Party in the U.S.A.","Stay","Without Me","Payphone","Treasure","Sunday Morning","Isn't She Lovely","I Want You Back","Lips Are Movin","The Middle","The Bones","Road Less Traveled","Rollin' (Air Raid Vehicle)","Lose Yourself","Maps"];
+
+/* ---------------- State + rendering ---------------- */
+const S={sings:[],voice:"",genres:[],artists:[],vibes:[],draws:[],noGenres:[],noVibes:[],noArtists:[],clean:false,stretch:"",name:""};
+const ORDER=["intro","1","2","3","4","5","6","7"];
+let cur="intro";
+const $=(q,el=document)=>el.querySelector(q), $$=(q,el=document)=>[...el.querySelectorAll(q)];
+
+function chip(label,sub,on,cls){const b=document.createElement("button");b.type="button";b.className=cls||"chip";b.setAttribute("aria-pressed",on?"true":"false");b.innerHTML=label+(sub?`<${cls==="opt"?"span class=\"sub\"":"small"}>${sub}</${cls==="opt"?"span":"small"}>`:"");return b}
+
+function renderMulti(key,items,container,opts={}){
+  container.innerHTML="";
+  items.forEach(it=>{
+    const [val,lab,sub]=Array.isArray(it)?it:[it,it,""];
+    const b=chip(lab,sub,S[key].includes(val),opts.style==="opt"?"opt":(opts.no?"chip no":"chip"));
+    b.onclick=()=>{const i=S[key].indexOf(val);i>-1?S[key].splice(i,1):S[key].push(val);b.setAttribute("aria-pressed",S[key].includes(val));onChange()};
+    container.appendChild(b);
+  });
+}
+function renderSingle(key,items,container){
+  container.innerHTML="";
+  items.forEach(([val,lab,sub])=>{
+    const b=chip(`<strong>${lab}</strong>`,sub,S[key]===val,"opt");
+    b.onclick=()=>{S[key]=val;$$(".opt",container).forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");onChange()};
+    container.appendChild(b);
+  });
+}
+function artistPool(){const seen=new Set(),out=[];S.genres.forEach(g=>(ARTISTS[g]||[]).forEach(a=>{if(!seen.has(a)){seen.add(a);out.push([g,a])}}));return out}
+
+function setup(){
+  renderMulti("sings",SINGS,$('[data-multi="sings"]'));
+  renderSingle("voice",VOICES,$('[data-single="voice"]'));
+  renderMulti("genres",GENRES,$('[data-multi="genres"]'));
+  renderMulti("vibes",VIBES,$('[data-multi="vibes"]'),{style:"opt"});
+  renderMulti("draws",DRAWS,$('[data-multi="draws"]'));
+  renderSingle("stretch",STRETCH,$('[data-single="stretch"]'));
+}
+function renderArtists(){
+  const box=$("#artistGroups");box.innerHTML="";
+  S.artists=S.artists.filter(a=>S.genres.some(g=>(ARTISTS[g]||[]).includes(a)));
+  const used=new Set();
+  S.genres.forEach(g=>{
+    const list=(ARTISTS[g]||[]).filter(a=>!used.has(a));list.forEach(a=>used.add(a));
+    if(!list.length)return;
+    const grp=document.createElement("div");grp.className="genre-group";
+    grp.innerHTML=`<h3>${g}</h3><div class="chips"></div>`;
+    box.appendChild(grp);
+    list.forEach(a=>{const b=chip(a,"",S.artists.includes(a));b.onclick=()=>{const i=S.artists.indexOf(a);i>-1?S.artists.splice(i,1):S.artists.push(a);b.setAttribute("aria-pressed",S.artists.includes(a))};$(".chips",grp).appendChild(b)});
+  });
+}
+function renderDislikes(){
+  S.noGenres=S.noGenres.filter(g=>!S.genres.includes(g));
+  renderMulti("noGenres",GENRES.filter(g=>!S.genres.includes(g)),$('[data-multi="noGenres"]'),{no:1});
+  renderMulti("noVibes",NOVIBES,$('[data-multi="noVibes"]'),{no:1});
+  const pool=artistPool().map(x=>x[1]).filter(a=>!S.artists.includes(a)).slice(0,24);
+  S.noArtists=S.noArtists.filter(a=>pool.includes(a));
+  renderMulti("noArtists",pool,$('[data-multi="noArtists"]'),{no:1});
+  $("#clean").checked=S.clean;
+}
+function onChange(){
+  $("#genreCount").textContent=S.genres.length?`${S.genres.length} picked`:"";
+  $$('[data-need]').forEach(b=>{const k=b.dataset.need;const v=S[k];b.disabled=Array.isArray(v)?v.length===0:!v});
+}
+function show(id){
+  cur=id;$$(".screen").forEach(s=>s.hidden=s.dataset.screen!==id);
+  const idx=ORDER.indexOf(id);
+  if(idx>0){const bar=$(`.screen[data-screen="${id}"] .progress i`);if(bar)bar.style.width=(idx/7*100)+"%"}
+  if(id==="3")renderArtists();
+  if(id==="6")renderDislikes();
+  onChange();window.scrollTo({top:0,behavior:"smooth"});
+  const h=$(`.screen[data-screen="${id}"] h1, .screen[data-screen="${id}"] h2`);if(h){h.setAttribute("tabindex","-1");h.focus({preventScroll:true})}
+}
+document.addEventListener("click",e=>{
+  const g=e.target.closest("[data-go]");if(!g)return;
+  const d=g.dataset.go;
+  if(d==="next"){if(cur==="intro")S.name=$("#name").value.trim();show(ORDER[ORDER.indexOf(cur)+1])}
+  if(d==="back")show(ORDER[Math.max(0,ORDER.indexOf(cur)-1)]);
+  if(d==="build")build();
+});
+$("#clean").addEventListener("change",e=>S.clean=e.target.checked);
+
+/* ---------------- Matching engine ---------------- */
+const TWANG=["Country","Classic Country","Folk and Americana"];
+function excluded(s){
+  if(S.clean&&!s.clean)return true;
+  if(S.noArtists.includes(s.a))return true;
+  if(s.g.some(g=>S.noGenres.includes(g))&&!s.g.some(g=>S.genres.includes(g)))return true;
+  if(S.noVibes.includes("rap")&&s.g.some(g=>g==="Rap"||g==="Hip-Hop")&&s.tags.includes("wordy"))return true;
+  if(S.noVibes.includes("scream")&&s.g.includes("Metal"))return true;
+  if(S.noVibes.includes("twang")&&s.g.every(g=>TWANG.includes(g)))return true;
+  return false;
+}
+function score(s){
+  let sc=0,why=null;
+  const artistHit=S.artists.find(a=>s.a.includes(a));
+  if(artistHit){sc+=8;why=`You love ${artistHit}`}
+  const gHits=s.g.filter(g=>S.genres.includes(g));
+  if(gHits.length){sc+=4+(gHits.length-1);if(!why)why=`You picked ${gHits[0]}`}
+  const drawTags=S.draws.flatMap(d=>DRAW_TAGS[d]||[]);
+  s.tags.forEach(t=>{if(S.vibes.includes(t))sc+=1.6;if(drawTags.includes(t))sc+=.9});
+  if(!why){const v=VIBES.find(([k])=>s.tags.includes(k)&&S.vibes.includes(k));if(v)why=`You like songs that are "${v[1].toLowerCase()}"`}
+  if(S.voice&&S.voice!=="X")sc+=(s.v===S.voice?1.5:-.8);
+  if(S.noVibes.includes("sad")&&s.tags.includes("emotional"))sc-=1.5;
+  if(S.noVibes.includes("slow")&&s.bpm<85&&s.tags.includes("chill"))sc-=1.5;
+  if(S.noVibes.includes("scream")&&s.tags.includes("gritty"))sc-=1;
+  if(s.crowd)sc+=.4;
+  return{sc,why:why||"A strong practice song for this spot"};
+}
+const tempo=s=>s.bpm>=115?"fast":s.bpm>=85?"mid":"slow";
+const SECTIONS=[
+  {n:"1.)",title:"Correct Breathing",kind:"Pick 3 songs. Tempo based",how:"Breathe in, stomach out. Chest and shoulders stay down. Check it in a mirror.",slots:[["Fast tempo","fast"],["Mid tempo","mid"],["Slow tempo","slow"]],area:"breath"},
+  {n:"2.)",title:"Relaxed Neck",kind:"Pick 4 songs. Range stretching",how:"Chin lowers a little as you go higher. Chin lifts a little as you go lower. Small moves, about half an inch to an inch.",slots:[["High song","high"],["Low song","low"],["High song","high"],["Low song","low"]],area:"neck"},
+  {n:"3.)",title:"Open Embouchure",kind:"Pick 3 songs. Tempo based",how:"Sing every word as if someone deaf is reading your lips. Open fast and wide to the vowel, close fast off the word.",slots:[["Fast tempo","fast"],["Mid tempo","mid"],["Slow tempo","slow"]],area:"mouth"}
+];
+function fits(s,area,want){
+  if(area==="neck"){
+    if(want==="high"){if(S.stretch==="comfort")return s.rng==="high"||s.rng==="mid";return s.rng==="high"}
+    return s.rng==="low";
+  }
+  return tempo(s)===want;
+}
+function reason(s,area,want){
+  if(area==="breath"){if(want==="fast")return`At about ${s.bpm} BPM the breaths come quick, so you can't cheat the refill. Stomach out on every inhale.`;if(want==="mid")return`A steady ${s.bpm} BPM. Room to lock in the in and out without rushing it.`;return`Slow and long phrases. This one tests how long your air holds before you reach for more.`}
+  if(area==="neck"){if(want==="high")return S.stretch==="push"?"This one makes you reach. Watch the mirror: the chin lowers as the melody climbs.":"Sits high enough to check that your chin lowers as you climb, instead of reaching up.";return"Lives low. Let the chin lift slightly as you go down, so you're not pressing on the notes."}
+  if(want==="fast")return`Lots of words at ${s.bpm} BPM. Your jaw has to open and close on every single one.`;
+  if(want==="mid")return"Time to get your mouth fully open to each vowel, and clean off the end of every word.";
+  return"Long vowels. Keep the tongue relaxed, down and behind the teeth the whole way through.";
+}
+let PLAN=[];
+function build(){
+  show("loading");
+  const msgs=["Pulling from the library","Matching tempos to your breathing","Checking ranges for your neck","Filling in your regimen"];
+  let i=0;const iv=setInterval(()=>{i++;if(i<msgs.length)$("#loadMsg").textContent=msgs[i]},450);
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  setTimeout(()=>{clearInterval(iv);makePlan();renderResults();show("results")},reduce?100:1800);
+}
+function makePlan(){
+  const pool=LIB.filter(s=>!excluded(s)).map(s=>({s,...score(s)}));
+  pool.sort((a,b)=>b.sc-a.sc);
+  const used=new Set();
+  PLAN=SECTIONS.map(sec=>({...sec,picks:sec.slots.map(([label,want])=>{
+    const cands=pool.filter(p=>fits(p.s,sec.area,want));
+    const fresh=cands.filter(p=>!used.has(p.s.id));
+    const pick=fresh[0]||cands[0];
+    if(pick)used.add(pick.s.id);
+    return{label,want,cands,idx:pick?cands.indexOf(pick):-1}
+  })}));
+}
+function slotHTML(sec,p,si,pi,delay){
+  const c=p.cands[p.idx];
+  if(!c)return`<div class="slot"><div class="which">${p.label}</div><div><div class="song">No match yet</div><p class="why">Loosen one of your skip lists and I'll find you one.</p></div></div>`;
+  const s=c.s;
+  return`<div class="slot enter" style="animation-delay:${delay===undefined?(si*4+pi)*60:delay}ms">
+    <div class="which">${p.label}</div>
+    <div>
+      <div class="song">${s.t}</div>
+      <div class="artist">${s.a}</div>
+      <div class="meta"><span class="tag">${s.bpm} BPM</span><span class="tag">Key ${s.key}</span><span class="tag">${s.v==="F"?"Higher voice":"Lower voice"}</span>${s.crowd?'<span class="tag red">Crowd pleaser</span>':""}</div>
+      <p class="why"><strong style="color:#101D38">${c.why}.</strong> ${reason(s,sec.area,p.want)}</p>
+    </div>
+    <button class="btn btn-secondary btn-small swap" data-swap="${si}-${pi}" aria-label="Swap ${s.t} for another song">Swap</button>
+  </div>`;
+}
+function renderResults(){
+  $("#clientLine").textContent="Client: "+(S.name||"__________________");
+  const topG=S.genres.slice(0,3).join(", ");
+  $("#resultIntro").textContent=`${S.name?S.name+", here":"Here"} are your 10 practice songs, built from ${topG}${S.genres.length>3?" and more":""}. Don't like one? Hit swap. Then print this and keep it where you practice.`;
+  $("#regimen").innerHTML=PLAN.map((sec,si)=>`<div class="section">
+    <div class="section-head"><span class="num">${sec.n}</span><h2>${sec.title}</h2><span class="kind">${sec.kind}</span></div>
+    <p class="how">${sec.how}</p>
+    <div data-sec="${si}">${sec.picks.map((p,pi)=>slotHTML(sec,p,si,pi)).join("")}</div>
+  </div>`).join("");
+  const crowdOK=CROWD_ORDER.map(t=>LIB.find(s=>s.t===t)).filter(s=>s&&!excluded(s));
+  const mine=crowdOK.filter(s=>s.g.some(g=>S.genres.includes(g)));
+  const list=(mine.length>=6?mine:mine.concat(crowdOK.filter(s=>!mine.includes(s)))).slice(0,10);
+  $("#crowdList").innerHTML=list.map(s=>`<li><strong>${s.t}</strong>, ${s.a}</li>`).join("");
+}
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-swap]");if(!b)return;
+  const [si,pi]=b.dataset.swap.split("-").map(Number);
+  const p=PLAN[si].picks[pi];
+  const inUse=new Set(PLAN.flatMap(sec=>sec.picks.map(x=>x.cands[x.idx]&&x.cands[x.idx].s.id)));
+  let n=p.idx;for(let k=0;k<p.cands.length;k++){n=(n+1)%p.cands.length;if(!inUse.has(p.cands[n].s.id))break}
+  p.idx=n;
+  const wrap=$(`[data-sec="${si}"]`);
+  wrap.children[pi].outerHTML=slotHTML(PLAN[si],p,si,pi,0);
+  const nb=$(`[data-swap="${si}-${pi}"]`);if(nb)nb.focus();
+});
+$("#printBtn").onclick=()=>window.print();
+$("#editBtn").onclick=()=>show("2");
+$("#restartBtn").onclick=()=>{Object.assign(S,{sings:[],voice:"",genres:[],artists:[],vibes:[],draws:[],noGenres:[],noVibes:[],noArtists:[],clean:false,stretch:"",name:""});$("#name").value="";setup();show("intro")};
+
+setup();onChange();
+</script>
+<script>
+(function(){
+ function txt(el){return (el.innerText||el.textContent||'').trim().slice(0,40);}
+ document.addEventListener('click',function(e){var t=e.target.closest('button,a,h1,h2,h3,p,li,label,span,div');if(!t)return;var r=t.getBoundingClientRect();parent.postMessage({type:'ls-click',txt:txt(t),x:e.clientX,y:e.clientY+window.scrollY,id:'tool'},'*');},true);
+ window.addEventListener('message',function(e){var m=e.data||{};if(m.type==='ls-apply'){var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);var n;while((n=w.nextNode())){var i=n.nodeValue.indexOf(m.find);if(i>-1){var s=document.createElement('span');s.setAttribute('data-ls',m.id);s.style.cssText='background:#FBE8A6;box-shadow:0 0 0 4px #FBE8A6;border-radius:4px;color:#101D38';s.textContent=m.replace;var after=n.splitText(i);after.nodeValue=after.nodeValue.slice(m.find.length);n.parentNode.insertBefore(s,after);s.scrollIntoView({block:'center',behavior:'smooth'});break;}}}
+ if(m.type==='ls-savebtn'&&!document.querySelector('[data-savebtn]')){var b=document.createElement('button');b.setAttribute('data-savebtn','1');b.textContent='Save my result';b.style.cssText='position:fixed;right:22px;bottom:22px;z-index:99;padding:14px 22px;border:0;border-radius:4px;background:#101D38;color:#fff;font:600 14px DM Sans,sans-serif;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 0 0 6px #FBE8A6';document.body.appendChild(b);}
+ if(m.type==='ls-undo'){document.querySelectorAll('[data-ls="'+m.id+'"]').forEach(function(s){s.replaceWith(document.createTextNode(m.find));});}
+ if(m.type==='ls-texts'){var out=[];document.querySelectorAll('h1,h2,h3,p').forEach(function(el){var t=(el.innerText||'').trim();if(t.length>14&&t.length<220&&out.length<12)out.push({tag:el.tagName.toLowerCase(),txt:t});});parent.postMessage({type:'ls-texts',texts:out},'*');}
+ });
+})();
+</script></body>
+</html>
